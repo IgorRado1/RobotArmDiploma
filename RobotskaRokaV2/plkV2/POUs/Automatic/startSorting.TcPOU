@@ -1,0 +1,128 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.15">
+  <POU Name="startSorting" Id="{9c246b88-e24f-4b9e-9a0d-43507cde2e96}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK startSorting
+VAR_INPUT
+    grab: grab; 
+	timer : TP;	
+	ccw: moveCCW;
+	cw:moveCW;
+	down:moveDown;
+	iztegni:moveOUT;
+	skrci:moveIN;
+	up: moveUp;
+	relise: relise; 
+END_VAR
+VAR_OUTPUT
+	 done: BOOL := FALSE; // Indikator, da je sekvenca zaključena
+END_VAR
+VAR
+	currentState: INT := 0; // Trenutno stanje sekvence
+	
+	obDol: INT;
+	objekt: INT;
+	itemID: INT := 1; //item number
+	TimerWait: TOF;
+	I: INT;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[CASE currentState OF
+    // Stanje 0: Priprava
+    0:
+        done := FALSE;         // Ponastavi indikator zaključka
+        GVL.downDone := FALSE;     // Ponastavi zastavico za premik dol
+        GVL.grabDone := FALSE;     // Ponastavi zastavico za prijem
+        currentState := 1;     // Premik na naslednje stanje
+
+    1://PREMIK DOL PO OBJEKTIH
+		 //grab(seconds := T#1.5S);     // Aktiviraj prijem
+		grab(seconds := T#2.2S);
+        IF GVL.grabDone THEN           // Počakaj, da je prijem zaključen
+            //grabDone := TRUE;       // Nastavi zastavico
+            currentState := 2;      // Premik na naslednje stanje
+			GVL.grabDone := FALSE;
+        END_IF
+		
+	2:	
+		ccw(seconds := T#2.5S);
+			IF GVL.CCWDone THEN           // Počakaj, da je prijem zaključen
+				currentState := 3;      // Premik na naslednje stanje
+				GVL.CCWDone := FALSE;
+			END_IF
+			
+	3:
+		cw(seconds := T#2.5S);
+        IF GVL.CWDone THEN           // Počakaj, da je prijem zaključen
+            currentState := 4;      // Premik na naslednje stanje
+			GVL.CWDone := FALSE;
+        END_IF
+	4:
+		down(seconds := T#1S);  // Aktiviraj premik dol
+		IF GVL.downDone THEN          // Počakaj, da je premik zaključen
+			//downDone := TRUE;      // Nastavi zastavico
+			currentState := 5;     // Premik na naslednje stanje
+			GVL.downDone := FALSE;
+		END_IF
+		
+	5:
+		iztegni(seconds := T#1S);
+        IF GVL.skrciDone THEN           // Počakaj, da je prijem zaključen
+            currentState := 6;      // Premik na naslednje stanje
+			GVL.skrciDone := FALSE;
+        END_IF
+		
+	6:
+		skrci(seconds := T#1S);
+        IF GVL.skrciDone THEN           // Počakaj, da je prijem zaključen
+            currentState := 7;      // Premik na naslednje stanje
+			GVL.skrciDone := FALSE;
+        END_IF
+	7:
+		up(seconds := T#2S);
+        IF GVL.upDone THEN           // Počakaj, da je prijem zaključen
+            currentState := 8;      // Premik na naslednje stanje
+			GVL.upDone := FALSE;
+        END_IF
+	8:
+		relise(seconds := T#2S);
+        IF GVL.reliseDone THEN           // Počakaj, da je prijem zaključen
+            currentState := 8;      // Premik na naslednje stanje
+			GVL.reliseDone := FALSE;
+        END_IF
+	
+END_CASE
+]]></ST>
+    </Implementation>
+    <LineIds Name="startSorting">
+      <LineId Id="27" Count="8" />
+      <LineId Id="187" Count="5" />
+      <LineId Id="184" Count="0" />
+      <LineId Id="200" Count="0" />
+      <LineId Id="193" Count="0" />
+      <LineId Id="195" Count="3" />
+      <LineId Id="194" Count="0" />
+      <LineId Id="208" Count="0" />
+      <LineId Id="201" Count="4" />
+      <LineId Id="185" Count="0" />
+      <LineId Id="209" Count="0" />
+      <LineId Id="211" Count="4" />
+      <LineId Id="210" Count="0" />
+      <LineId Id="218" Count="1" />
+      <LineId Id="221" Count="3" />
+      <LineId Id="220" Count="0" />
+      <LineId Id="225" Count="1" />
+      <LineId Id="228" Count="3" />
+      <LineId Id="227" Count="0" />
+      <LineId Id="233" Count="0" />
+      <LineId Id="236" Count="3" />
+      <LineId Id="235" Count="0" />
+      <LineId Id="241" Count="0" />
+      <LineId Id="243" Count="3" />
+      <LineId Id="242" Count="0" />
+      <LineId Id="234" Count="0" />
+      <LineId Id="186" Count="0" />
+      <LineId Id="9" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

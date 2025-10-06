@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.15">
+  <POU Name="relise" Id="{6d50c33d-be39-4223-8781-7f3d16f75b12}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK relise
+VAR_INPUT
+	 seconds: TIME; 
+END_VAR
+VAR_OUTPUT
+	done: BOOL := FALSE;
+END_VAR
+VAR
+	TimerNewRelise: AUTOtimer; // Trenutno pomemben
+	aktiviran: BOOL := FALSE; // Notranja logika za aktivacijo
+	KoncRelise: BOOL := FALSE;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[IF NOT aktiviran THEN
+    TimerNewRelise(vrednost := TRUE, inpCas := seconds, outCas => KoncRelise);
+    aktiviran := TRUE;
+END_IF
+
+IF KoncRelise AND NOT GVL.SWgrab THEN
+    TimerNewRelise(vrednost := FALSE, inpCas := seconds, outCas => KoncRelise);
+	GVL.spusti := TRUE;
+	GVL.clawWay := TRUE;
+    GVL.clawAction := TRUE;     // Ustavi premik gor
+  	GVL.reliseDone := FALSE;    // Označi zaključek premika
+	GVL.grabMeter := GVL.grabMeter - 0.6;
+ELSE
+	GVL.spusti := FALSE;
+   	GVL.clawWay := TRUE;
+    GVL.clawAction := FALSE;      // Premik gor aktiven
+   	GVL.reliseDone := TRUE;   // Premik še ni končan
+	aktiviran := FALSE;
+END_IF]]></ST>
+    </Implementation>
+    <LineIds Name="relise">
+      <LineId Id="15" Count="6" />
+      <LineId Id="29" Count="0" />
+      <LineId Id="44" Count="0" />
+      <LineId Id="30" Count="0" />
+      <LineId Id="23" Count="2" />
+      <LineId Id="45" Count="0" />
+      <LineId Id="26" Count="0" />
+      <LineId Id="31" Count="0" />
+      <LineId Id="27" Count="1" />
+      <LineId Id="9" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

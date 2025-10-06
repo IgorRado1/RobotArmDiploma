@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.15">
+  <POU Name="grab" Id="{fe9af8bf-9c8d-42eb-8482-49d86b9292ab}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK grab
+VAR_INPUT
+	 seconds: TIME; //time of moving	  
+END_VAR
+VAR_OUTPUT
+	done: BOOL := FALSE; // output of finished work
+END_VAR
+VAR
+	TimerNewGrab: AUTOtimer;
+	activated: BOOL := FALSE; // Internal logic for activation
+	grabEnd: BOOL := FALSE;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[IF NOT activated THEN
+    TimerNewGrab(vrednost := TRUE, inpCas := seconds, outCas => grabEnd);
+    activated := TRUE;
+END_IF
+
+IF grabEnd  THEN
+    TimerNewGrab(vrednost := FALSE, inpCas := seconds, outCas => grabEnd);
+	GVL.primi := TRUE;
+	GVL.clawWay := FALSE;
+    GVL.clawAction := TRUE;  // grab active 
+    GVL.grabDone := FALSE; // The move is not finished yet
+	GVL.grabMeter := GVL.grabMeter + 0.4;
+ELSE
+	GVL.primi  := FALSE;
+	GVL.clawWay := FALSE;
+    GVL.clawAction := FALSE;     // Stop grabing
+    GVL.grabDone:= TRUE;  // Mark the end of the move
+	activated := FALSE;
+END_IF]]></ST>
+    </Implementation>
+    <LineIds Name="grab">
+      <LineId Id="14" Count="6" />
+      <LineId Id="47" Count="0" />
+      <LineId Id="31" Count="0" />
+      <LineId Id="21" Count="3" />
+      <LineId Id="48" Count="0" />
+      <LineId Id="33" Count="1" />
+      <LineId Id="26" Count="1" />
+      <LineId Id="9" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

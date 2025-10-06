@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.15">
+  <POU Name="moveIN" Id="{324f4dba-d0c4-4d96-aab5-e296be4dd26c}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK moveIN
+VAR_INPUT
+    seconds: TIME;     //time of moving
+END_VAR
+
+VAR_OUTPUT
+    done: BOOL := FALSE; // output of finished work
+END_VAR
+
+VAR
+	TimerNewIN: AUTOtimer;
+	activated: BOOL := FALSE; // Internal logic for activation
+	INend: BOOL := FALSE;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[IF NOT activated THEN
+    TimerNewIN(vrednost := TRUE, inpCas := seconds, outCas => INend);
+    activated := TRUE;
+END_IF
+
+IF INend AND NOT GVL.SWstretch THEN //check switch aswell
+    TimerNewIN(vrednost := FALSE, inpCas := seconds, outCas => INend);
+   	GVL.skrci := TRUE;
+	GVL.stretchWay := TRUE; 
+	GVL.stretchAction := TRUE;      // shrink active
+    GVL.skrciDone := FALSE;    // Označi zaključek premika
+	GVL.length := GVL.length - 0.5;
+ELSE
+	GVL.skrci := FALSE;
+   	GVL.stretchWay := TRUE; 
+	GVL.stretchAction := FALSE;        // Stop shrinking
+    GVL.skrciDone := TRUE;   // Mark the end of the move
+	activated := FALSE;
+END_IF]]></ST>
+    </Implementation>
+    <LineIds Name="moveIN">
+      <LineId Id="10" Count="7" />
+      <LineId Id="39" Count="0" />
+      <LineId Id="18" Count="3" />
+      <LineId Id="40" Count="0" />
+      <LineId Id="22" Count="3" />
+      <LineId Id="9" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

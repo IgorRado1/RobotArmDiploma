@@ -1,0 +1,65 @@
+# ---- General ----
+*.log
+*.tmp
+*.bak
+*.swp
+Thumbs.db
+.DS_Store
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.env
+.venv/
+env/
+venv/
+
+# ---- Arduino (build artifacts) ----
+*.hex
+*.elf
+*.bin
+
+# ---- Visual Studio / TwinCAT ----
+.vs/
+[Bb]in/
+[Oo]bj/
+Debug/
+Release/
+x64/
+x86/
+*.user
+*.suo
+*.cache
+*.opendb
+*.VC.db
+*.ipch
+*.tlog
+*.lastbuildstate
+
+# TwinCAT runtime & temp
+_Boot/
+_Config/Temp/
+*.tmc
+*.tpy
+*.bak
+
+# Visual Studio backup/restore
+*.ncb
+*.aps
+*.ilk
+*.pdb
+*.idb
+
+# Logs and generated files
+*.log
+*.tmp
+*.wixobj
+*.wixpdb
+
+# ---- HMI generated files ----
+HMI/**/bin/
+HMI/**/obj/
+HMI/**/Generated/
+HMI/**/Temp/

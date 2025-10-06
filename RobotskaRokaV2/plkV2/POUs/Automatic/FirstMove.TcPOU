@@ -1,0 +1,229 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.15">
+  <POU Name="FirstMove" Id="{81f17808-a281-4ee7-8531-e5b869152184}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FirstMove
+VAR_INPUT
+    grab: grab; 
+	timer : TP;	
+	ccw: moveCCW;
+	cw:moveCW;
+	down:moveDown;
+	iztegni:moveOUT;
+	skrci:moveIN;
+	up: moveUp;
+	relise: relise; 
+	itemID: INT := GVL.breadID;
+END_VAR
+VAR_OUTPUT
+	 done: BOOL := FALSE; // Indikator, da je sekvenca zaključena
+END_VAR
+VAR
+	currentState: INT := 0; // Trenutno stanje sekvence
+	
+	obDol: INT;
+	objekt: INT;
+	//itemID: INT := 1; //item number
+	
+	TimerWait: TOF;
+	I: INT;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[CASE currentState OF
+	
+	0:
+		done := FALSE;
+		GVL.downDone := FALSE;
+		GVL.grabDone := FALSE;
+		currentState := 1;
+	
+	1:
+		down(seconds := T#5S);  // Aktiviraj premik dol
+		IF GVL.downDone THEN          // Počakaj, da je premik zaključen
+			currentState := 2;     // Premik na naslednje stanje
+			GVL.downDone := FALSE;
+		END_IF
+		
+	2:
+		grab(seconds := T#2.2S);
+		IF GVL.grabDone THEN           // Počakaj, da je prijem zaključen
+			currentState := 3;      // Premik na naslednje stanje
+			GVL.grabDone := FALSE;
+		END_IF
+		
+	3:
+		up(seconds := T#7S);
+        IF GVL.upDone THEN           // Počakaj, da je prijem zaključen
+            currentState := 4;      // Premik na naslednje stanje
+			GVL.upDone := FALSE;
+        END_IF
+
+	4:
+		//bageta
+		IF itemID = 1 THEN
+			cw(seconds := T#1.9S);
+			IF GVL.CWDone THEN           // Počakaj, da je prijem zaključen
+				currentState := 5;      // Premik na naslednje stanje
+				GVL.CWDone := FALSE;
+			END_IF
+		//toast
+		ELSIF itemID = 2 THEN
+			cw(seconds := T#2.6S);
+			IF GVL.CWDone THEN           // Počakaj, da je prijem zaključen
+				currentState := 5;      // Premik na naslednje stanje
+				GVL.CWDone := FALSE;
+			END_IF
+		//rženi kruh
+		ELSIF itemID = 3 THEN
+			cw(seconds := T#3.7S);
+			IF GVL.CWDone THEN           // Počakaj, da je prijem zaključen
+				currentState := 5;      // Premik na naslednje stanje
+				GVL.CWDone := FALSE;
+			END_IF
+		//bagel
+		ELSIF itemID = 4 THEN
+			cw(seconds := T#4.2S);
+			IF GVL.CWDone THEN           // Počakaj, da je prijem zaključen
+				currentState := 5;      // Premik na naslednje stanje
+				GVL.CWDone := FALSE;
+			END_IF
+		END_IF
+		
+	
+	5:
+	IF itemID = 1 THEN
+		iztegni(seconds := T#4S);
+        IF GVL.skrciDone THEN           // Počakaj, da je prijem zaključen
+            currentState := 6;      // Premik na naslednje stanje
+			GVL.skrciDone := FALSE;
+        END_IF
+	ELSIF itemID = 2 THEN
+		iztegni(seconds := T#2.3S);
+        IF GVL.skrciDone THEN           // Počakaj, da je prijem zaključen
+            currentState := 6;      // Premik na naslednje stanje
+			GVL.skrciDone := FALSE;
+        END_IF
+	ELSIF itemID = 3 THEN				
+		iztegni(seconds := T#2.3S);
+        IF GVL.skrciDone THEN           // Počakaj, da je prijem zaključen
+            currentState := 6;      // Premik na naslednje stanje
+			GVL.skrciDone := FALSE;
+        END_IF
+	ELSIF itemID = 4 THEN
+		iztegni(seconds := T#4.3S);
+        IF GVL.skrciDone THEN           // Počakaj, da je prijem zaključen
+            currentState := 6;      // Premik na naslednje stanje
+			GVL.skrciDone := FALSE;
+        END_IF
+	END_IF
+		
+	
+	6:
+		relise(seconds := T#3S);
+        IF GVL.reliseDone THEN           // Počakaj, da je prijem zaključen
+            currentState := 7;      // Premik na naslednje stanje
+			GVL.reliseDone := FALSE;
+        END_IF
+	
+	7:
+		skrci(seconds := T#6S);
+        IF GVL.skrciDone THEN           // Počakaj, da je prijem zaključen
+            currentState := 8;      // Premik na naslednje stanje
+			GVL.skrciDone := FALSE;
+        END_IF
+	
+	8:
+		ccw(seconds := T#6S);
+        IF GVL.CWDone THEN           // Počakaj, da je prijem zaključen
+            //currentState := 9;      // Premik na naslednje stanje
+			currentState := 9;
+			GVL.CWDone := FALSE;
+        END_IF
+		
+	//9:
+	//	GVL.upDone := FALSE;
+	//	up(seconds := T#7S);
+    //    IF GVL.upDone THEN           // Počakaj, da je prijem zaključen
+    //        currentState := 0;      // Premik na naslednje stanje
+	//		GVL.upDone := FALSE;
+    //    END_IF
+	
+	 9:
+        done := TRUE;               // Označi, da je sekvenca zaključena
+        currentState := 0;          // Ponastavi na začetno stanje
+
+	 
+END_CASE
+]]></ST>
+    </Implementation>
+    <LineIds Name="FirstMove">
+      <LineId Id="33" Count="0" />
+      <LineId Id="402" Count="0" />
+      <LineId Id="371" Count="3" />
+      <LineId Id="366" Count="0" />
+      <LineId Id="375" Count="0" />
+      <LineId Id="108" Count="0" />
+      <LineId Id="110" Count="1" />
+      <LineId Id="113" Count="1" />
+      <LineId Id="109" Count="0" />
+      <LineId Id="115" Count="1" />
+      <LineId Id="253" Count="0" />
+      <LineId Id="119" Count="0" />
+      <LineId Id="121" Count="1" />
+      <LineId Id="124" Count="1" />
+      <LineId Id="204" Count="0" />
+      <LineId Id="290" Count="3" />
+      <LineId Id="127" Count="0" />
+      <LineId Id="132" Count="0" />
+      <LineId Id="39" Count="0" />
+      <LineId Id="246" Count="0" />
+      <LineId Id="216" Count="0" />
+      <LineId Id="226" Count="3" />
+      <LineId Id="217" Count="2" />
+      <LineId Id="231" Count="3" />
+      <LineId Id="230" Count="0" />
+      <LineId Id="220" Count="1" />
+      <LineId Id="236" Count="3" />
+      <LineId Id="235" Count="0" />
+      <LineId Id="222" Count="1" />
+      <LineId Id="241" Count="3" />
+      <LineId Id="225" Count="0" />
+      <LineId Id="215" Count="0" />
+      <LineId Id="133" Count="2" />
+      <LineId Id="307" Count="0" />
+      <LineId Id="316" Count="3" />
+      <LineId Id="312" Count="0" />
+      <LineId Id="308" Count="0" />
+      <LineId Id="320" Count="3" />
+      <LineId Id="313" Count="0" />
+      <LineId Id="310" Count="0" />
+      <LineId Id="325" Count="3" />
+      <LineId Id="324" Count="0" />
+      <LineId Id="311" Count="0" />
+      <LineId Id="329" Count="3" />
+      <LineId Id="315" Count="0" />
+      <LineId Id="309" Count="0" />
+      <LineId Id="146" Count="0" />
+      <LineId Id="136" Count="1" />
+      <LineId Id="151" Count="3" />
+      <LineId Id="138" Count="1" />
+      <LineId Id="155" Count="0" />
+      <LineId Id="160" Count="3" />
+      <LineId Id="140" Count="1" />
+      <LineId Id="164" Count="0" />
+      <LineId Id="167" Count="2" />
+      <LineId Id="359" Count="0" />
+      <LineId Id="170" Count="0" />
+      <LineId Id="166" Count="0" />
+      <LineId Id="171" Count="1" />
+      <LineId Id="294" Count="0" />
+      <LineId Id="272" Count="3" />
+      <LineId Id="173" Count="0" />
+      <LineId Id="296" Count="0" />
+      <LineId Id="298" Count="2" />
+      <LineId Id="360" Count="1" />
+      <LineId Id="97" Count="0" />
+      <LineId Id="9" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

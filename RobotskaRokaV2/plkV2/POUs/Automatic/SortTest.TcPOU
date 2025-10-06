@@ -1,0 +1,141 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.15">
+  <POU Name="SortTest" Id="{90f478ae-cfbd-4a17-85ef-50a4f4a67372}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK SortTest
+VAR_INPUT
+    grab: grab;
+    timer: TP;
+    ccw: moveCCW;
+    cw: moveCW;
+    down: moveDown;
+    iztegni: moveOUT;
+    skrci: moveIN;
+    up: moveUp;
+    relise: relise;
+END_VAR
+
+VAR_OUTPUT
+    done: BOOL := FALSE;
+END_VAR
+
+VAR
+    currentState: INT := 100; // Start at new state for waiting
+  
+	{attribute 'TcHmiSymbol'}
+	//itemID: INT := 0;
+	itemID: INT := 1;
+    previousBreadID: INT := 0;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[CASE currentState OF
+
+    // 100 – Čakaj na nov objekt
+    100:
+        done := FALSE;
+        IF GVL.breadID <> 0 AND GVL.breadID <> previousBreadID THEN
+            itemID := GVL.breadID;
+            GVL.BreadInfoID := itemID;
+            GVL.breadID := 0; // Počistimo, da bo Arduino lahko poslal novega
+            currentState := 0;
+        END_IF
+
+    // 0: Inicializacija
+    0:
+        GVL.downDone := FALSE;
+        GVL.grabDone := FALSE;
+        currentState := 1;
+
+    // 1: Premik dol
+    1:
+        down(seconds := T#5S);
+        IF GVL.downDone THEN
+            GVL.downDone := FALSE;
+            currentState := 2;
+        END_IF
+
+    // 2: Prijem
+    2:
+        grab(seconds := T#2.2S);
+        IF GVL.grabDone THEN
+            GVL.grabDone := FALSE;
+            currentState := 3;
+        END_IF
+
+    // 3: Dvig
+    3:
+        up(seconds := T#7S);
+        IF GVL.upDone THEN
+            GVL.upDone := FALSE;
+            currentState := 4;
+        END_IF
+
+    // 4: Rotacija CW glede na tip kruha
+    4:
+        CASE itemID OF
+            1: cw(seconds := T#1.9S); // Bageta
+            2: cw(seconds := T#2.6S); // Toast
+            3: cw(seconds := T#3.7S); // Rženi
+            4: cw(seconds := T#4.2S); // Bagel
+        END_CASE
+        IF GVL.CWDone THEN
+            GVL.CWDone := FALSE;
+            currentState := 5;
+        END_IF
+
+    // 5: Iztegni roko
+    5:
+        CASE itemID OF
+            1: iztegni(seconds := T#4S);
+            2: iztegni(seconds := T#2.3S);
+            3: iztegni(seconds := T#2.3S);
+            4: iztegni(seconds := T#4.3S);
+        END_CASE
+        IF GVL.skrciDone THEN
+            GVL.skrciDone := FALSE;
+            currentState := 6;
+        END_IF
+
+    // 6: Spusti kruh
+    6:
+        relise(seconds := T#3S);
+        IF GVL.reliseDone THEN
+            GVL.reliseDone := FALSE;
+			//GVL.BinUpdateTrigger := itemID;
+            currentState := 7;
+        END_IF
+
+    // 7: Roka se skrči nazaj
+    7:
+        skrci(seconds := T#6S);
+        IF GVL.skrciDone THEN
+            GVL.skrciDone := FALSE;
+			//GVL.BinUpdateTrigger := 0;
+            currentState := 8;
+        END_IF
+
+    // 8: Povratek z rotacijo CCW
+    8:
+        ccw(seconds := T#6S);
+        IF GVL.CCWDone THEN
+            GVL.CCWDone := FALSE;
+            currentState := 9;
+        END_IF
+
+    // 9: Zaključi cikel
+    9:
+        done := TRUE;
+        currentState := 100; // Vrni se na čakanje novega objekta
+END_CASE]]></ST>
+    </Implementation>
+    <LineIds Name="SortTest">
+      <LineId Id="356" Count="5" />
+      <LineId Id="503" Count="1" />
+      <LineId Id="364" Count="64" />
+      <LineId Id="529" Count="0" />
+      <LineId Id="429" Count="7" />
+      <LineId Id="554" Count="0" />
+      <LineId Id="437" Count="14" />
+      <LineId Id="9" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

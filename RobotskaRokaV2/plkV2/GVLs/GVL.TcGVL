@@ -1,0 +1,165 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.15">
+  <GVL Name="GVL" Id="{02bcaa80-6ec7-4749-91f8-15a703283623}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+VAR_GLOBAL
+	//Automatic/manual
+	ToggleSwitch AT %I* : BOOL; //0 - automatic; 1 - manual
+	
+	//lights
+	LEDRed AT %Q* : BOOL; 
+	LEDGreen AT %Q* : BOOL; 
+	LEDupperBlue AT %Q* : BOOL; 
+	LEDdownBlue AT %Q* : BOOL; 
+	
+	//buttons
+	//upper
+	ULBButton AT %I* : BOOL;
+	URBButton AT %I* : BOOL;
+	//lover
+	LLBButton AT %I* : BOOL;
+	LRBButton AT %I* : BOOL;
+	//color
+	GButton AT %I* : BOOL;
+	RButton AT %I* : BOOL;
+
+
+	//MOVESET
+	//MoveUp/Down
+	riseWay AT %Q* : BOOL; //0 - down, 1 - up
+	riseAction AT %Q* : BOOL;
+	
+	
+	//Rotation
+	rotationWay AT %Q* : BOOL; //0 - CW, 1 - CCW
+	rotationAction AT %Q* : BOOL;
+	
+	
+	//Stretch
+	stretchWay AT %Q* : BOOL; //0 - stretch, 1 - shrink
+	stretchAction AT %Q* : BOOL;
+	
+	//claw
+	clawWay AT %Q* : BOOL; //0 - open, 1 - release
+	clawAction AT %Q* : BOOL;
+	
+	
+	//SWITCHES
+	//rotation
+	SWrotation AT %I* : BOOL;
+	SWstepsRotation AT %I* : BOOL;
+	
+	//stretch
+	SWstretch AT %I* : BOOL;
+	SWstepsStretch AT %I* : BOOL;
+	
+	//rise
+	SWrise AT %I* : BOOL;
+	SWstepsRise AT %I* : BOOL;
+	
+	//grab
+	SWgrab AT %I* : BOOL;
+	SWstepsGrab AT %I* : BOOL;
+	
+	
+	//Bakery
+	weight: REAL; //light - bagel, medium - toast/rye, heavy - baguette (weight sensor - HX711)
+	color: INT; //white/black (color sensor - TCS3472)
+	breadType: INT; //toast = 0; baguette = 1; rye = 2; bagel = 3
+	binNumber: INT; // 2 or 4
+	binFull: BOOL; //HC-SR04 x 2 or 4
+	breadInfo : STRING; // white toast, white beguette, dark rye, dark bagel
+	
+	//objekt za pekarno - za HMI
+	{attribute 'TcHmiSymbol'}
+	BreadInfoID : INT := 0;
+	
+	
+	{attribute 'TcHmiSymbol'}
+	BinFullNumber : INT := 0;
+	
+	
+	//nove lastnosti za senzorje
+	breadColor : INT;
+    breadWeightClass : STRING(10);
+	breadID: INT;
+	
+ 	{attribute 'TcHmiSymbol'}
+	breadIDinfo : INT := 0;
+	{attribute 'TcHmiSymbol'}
+	breadIDText : STRING(10) := '';
+
+    fullBin : INT;
+	
+	
+	//za posodabljat koliko elementov je v škatli
+	{attribute 'TcHmiSymbol'}
+	BinUpdateTrigger : INT := 0;
+	
+	
+	{attribute 'TcHmiSymbol'}
+	breadTypeImageID : INT := 0; // 0=none, 1=toast, 2=baguette, 3=rye, 4=bagel
+	//Sensors
+	//BinIsFull : BOOL := FALSE;
+	BinIsFull : INT := 0;	
+	{attribute 'TcHmiSymbol'} Bin1Full : BOOL := FALSE;
+	{attribute 'TcHmiSymbol'} Bin2Full : BOOL := FALSE;
+	{attribute 'TcHmiSymbol'} Bin3Full : BOOL := FALSE;
+	{attribute 'TcHmiSymbol'} Bin4Full : BOOL := FALSE;
+	
+	//breadColor: white, black
+	{attribute 'TcHmiSymbol'}
+	//breadColor : STRING(10) := 'NONE';
+	
+	
+	//Number of bread in bin
+    numToast   : INT := 0;
+    numBaguette: INT := 0;
+    numRye     : INT := 0;
+    numBagel   : INT := 0;
+	
+	//STEVCI
+	UniversalStevec AT %I* : BOOL;
+	stevecGor AT %I* : BOOL;
+	stevecRotacija AT %I* : BOOL;
+	stevecSkrci AT %I* : BOOL;
+	stevecKlesce AT %I* : BOOL;
+	
+	height AT %I* : REAL;
+	rotation AT %I* : REAL;
+	length AT %I* : REAL;
+	grabMeter AT %I* : REAL;
+	
+	
+	// AVTOMATIK PREMIKI
+	upDone AT %Q* : BOOL;
+	downDone AT %Q* : BOOL;
+	CWDone AT %Q* : BOOL;
+	CCWDone AT %Q* : BOOL;
+	skrciDone AT %Q* : BOOL;
+	raztegniDone AT %Q* : BOOL;
+	grabDone AT %Q* : BOOL;
+	reliseDone AT %Q* : BOOL;
+	
+	//GOR DOL
+	gor AT %Q* : BOOL;
+	dol AT %Q* : BOOL;
+	
+	//LEVO DESNO
+	CW AT %Q* : BOOL;
+	CCW AT %Q* : BOOL;
+	
+	//KLEŠČE--NE DELA!!!!
+	primi AT %Q* : BOOL;
+	spusti AT %Q* : BOOL;
+	
+	//IZTEG--NE DELA!!!!
+	raztegniNaprej AT %Q* : BOOL;
+	skrci AT %Q* : BOOL;
+	
+	
+	//on/off
+	isON AT %I* : BOOL;
+END_VAR]]></Declaration>
+  </GVL>
+</TcPlcObject>

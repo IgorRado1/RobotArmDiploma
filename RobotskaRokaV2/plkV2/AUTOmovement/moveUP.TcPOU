@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.15">
+  <POU Name="moveUP" Id="{79726914-378b-4883-b74d-ce00d9cc2304}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK moveUP
+VAR_INPUT
+	 seconds: TIME; //time of moving
+END_VAR
+VAR_OUTPUT
+	done: BOOL := FALSE; // output of finished work
+END_VAR
+VAR
+	TimerNewUP: AUTOtimer;
+	activated: BOOL := FALSE; // Internal logic for activation
+	UPend: BOOL := FALSE;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+IF NOT activated THEN
+    TimerNewUP(vrednost := TRUE, inpCas := seconds, outCas => UPend);
+    activated := TRUE;
+END_IF
+
+IF UPend AND NOT GVL.SWrise THEN
+    TimerNewUP(vrednost := FALSE, inpCas := seconds, outCas => UPend);
+	GVL.gor := TRUE;  
+	GVL.riseWay := TRUE;
+	GVL.riseAction := TRUE;      // Ustavi premik gor
+    GVL.upDone := FALSE;    // Označi zaključek premika
+	GVL.height := GVL.height + 0.6;
+ELSE
+	GVL.gor := FALSE; 
+    GVL.riseWay := FALSE;
+	GVL.riseAction := FALSE;        // Premik gor aktiven
+    GVL.upDone := TRUE;   // Premik še ni končan
+	activated := FALSE;
+END_IF]]></ST>
+    </Implementation>
+    <LineIds Name="moveUP">
+      <LineId Id="102" Count="13" />
+      <LineId Id="132" Count="0" />
+      <LineId Id="116" Count="3" />
+      <LineId Id="78" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

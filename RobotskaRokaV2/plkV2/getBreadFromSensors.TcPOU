@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.15">
+  <POU Name="getBreadFromSensors" Id="{b0184326-85ae-4124-afa8-224bf3630ad1}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK getBreadFromSensors
+VAR_INPUT
+	breadColor: INT;
+	breadWeightClass: STRING;
+END_VAR
+VAR_OUTPUT
+	breadTypeImageID: INT;
+	breadInfo: STRING;
+END_VAR
+VAR	
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[IF breadColor = 0 AND breadWeightClass = 'medium' THEN
+    breadTypeImageID := 1; // Toast
+    breadInfo := 'White Toast';
+ELSIF breadColor = 0 AND breadWeightClass = 'heavy' THEN
+    breadTypeImageID := 2; // Baguette
+    breadInfo := 'White Baguette';
+ELSIF breadColor = 1 AND breadWeightClass = 'medium' THEN
+    breadTypeImageID := 3; // Rye
+    breadInfo := 'Dark Rye';
+ELSIF breadColor = 1 AND breadWeightClass = 'light' THEN
+    breadTypeImageID := 4; // Bagel
+    breadInfo := 'Dark Bagel';
+ELSE
+    breadTypeImageID := 0;
+    breadInfo := 'Unknown';
+END_IF;]]></ST>
+    </Implementation>
+    <LineIds Name="getBreadFromSensors">
+      <LineId Id="10" Count="14" />
+      <LineId Id="9" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

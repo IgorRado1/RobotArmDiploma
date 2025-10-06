@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.15">
+  <POU Name="Automatic" Id="{e2072f19-4cb5-4c62-bc92-0c74628c7c7b}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK Automatic
+VAR_INPUT	
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+    R1 : FirstMove;
+    previousBreadID : INT := 0;
+	i : INT := 1;
+    triggerStart : BOOL := FALSE;
+    isRunning : BOOL := FALSE;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// Če kruh še ni v obdelavi in pride nov breadID
+//IF NOT isRunning AND GVL.breadID <> 0 AND GVL.breadID <> previousBreadID THEN
+IF NOT isRunning AND GVL.breadID <> 0 THEN
+	R1.itemID := GVL.breadID; // Nastavi novi kruh
+	triggerStart := TRUE;
+	previousBreadID := GVL.breadID; // Posodobi si trenutno vrednost
+END_IF
+
+// Poženi sekvenco, če je bil sprožen nov klic
+IF triggerStart THEN
+	R1(); // Pokliči FB
+	isRunning := TRUE;
+END_IF
+
+// Nadaljuj izvajanje sekvence
+IF isRunning THEN
+	R1(); // Sekvenca se še izvaja
+   IF R1.done THEN
+		isRunning := FALSE;
+		GVL.breadID := 0;           // Reset za TwinCAT
+		previousBreadID := 0;       // Omogoči, da tudi isti kruh lahko pride ponovno
+		triggerStart := FALSE;      // Reset sprožilca
+	END_IF
+END_IF
+]]></ST>
+    </Implementation>
+    <LineIds Name="Automatic">
+      <LineId Id="112" Count="1" />
+      <LineId Id="156" Count="20" />
+      <LineId Id="155" Count="0" />
+      <LineId Id="9" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.15">
+  <POU Name="moveCCW" Id="{61637980-b134-4e84-900e-4aeda4551938}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK moveCCW
+VAR_INPUT
+	 seconds: TIME;  //time of moving
+END_VAR
+VAR_OUTPUT
+	 done: BOOL := FALSE; // output of finished work
+END_VAR
+VAR
+	TimerNewCCW: AUTOtimer; 
+	activated: BOOL := FALSE; // Internal logic for activation
+	CCWend: BOOL := FALSE;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[IF NOT activated THEN
+    TimerNewCCW(vrednost := TRUE, inpCas := seconds, outCas => CCWend);
+    activated := TRUE;
+END_IF
+
+IF CCWend AND NOT GVL.SWrotation THEN
+    TimerNewCCW(vrednost := FALSE, inpCas := seconds, outCas => CCWend);
+	GVL.CCW := TRUE;
+    GVL.rotationWay := TRUE;      
+	GVL.rotationAction := TRUE;  // CCW active 
+  	GVL.CCWDone := FALSE;    // The move is not finished yet
+	GVL.rotation := GVL.rotation - 0.5;
+ELSE
+	GVL.CCW := FALSE; 
+   	GVL.rotationWay := FALSE;      
+	GVL.rotationAction := FALSE;    // Stop moving CCW
+   	GVL.CCWDone := TRUE;   // Mark the end of the move
+	activated := FALSE;
+END_IF]]></ST>
+    </Implementation>
+    <LineIds Name="moveCCW">
+      <LineId Id="16" Count="6" />
+      <LineId Id="44" Count="0" />
+      <LineId Id="23" Count="0" />
+      <LineId Id="30" Count="0" />
+      <LineId Id="24" Count="2" />
+      <LineId Id="45" Count="0" />
+      <LineId Id="27" Count="0" />
+      <LineId Id="31" Count="0" />
+      <LineId Id="28" Count="1" />
+      <LineId Id="9" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

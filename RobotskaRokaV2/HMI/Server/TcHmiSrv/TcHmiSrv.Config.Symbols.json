@@ -1,0 +1,22 @@
+{
+  "symbols": [
+    {
+      "name": "currentImagePath",
+      "type": "STRING",
+      "initialValue": "",
+      "isPersistent": true
+    },
+    {
+      "name": "currentBreadSelection",
+      "type": "INT",
+      "initialValue": 0,
+      "isPersistent": true,
+      "enumeration": {
+        "1": "Toast",
+        "2": "Baguette",
+        "3": "Rye bread",
+        "4": "Bagel"
+      }
+    }
+  ]
+}

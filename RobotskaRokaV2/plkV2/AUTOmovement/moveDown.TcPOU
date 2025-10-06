@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.15">
+  <POU Name="moveDown" Id="{061a1358-53f4-4099-a036-317bb55ab2ac}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK moveDown
+VAR_INPUT
+	seconds: TIME; //time of moving
+END_VAR
+VAR_OUTPUT
+	done: BOOL := FALSE;  // output of finished work
+END_VAR
+VAR
+	TimerNewDown: AUTOtimer; 
+	aktiviran: BOOL := FALSE; // Internal logic for activation
+	DownEnd: BOOL := FALSE;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[IF NOT aktiviran THEN
+    TimerNewDown(vrednost := TRUE, inpCas := seconds, outCas => DownEnd);
+    aktiviran := TRUE;
+END_IF
+
+IF DownEnd THEN
+    TimerNewDown(vrednost := FALSE, inpCas := seconds, outCas => DownEnd);
+	GVL.dol := TRUE;
+	GVL.riseWay := FALSE;
+	GVL.riseAction := TRUE; 	// down active 
+  	GVL.downDone := FALSE;    // The move is not finished yet
+	GVL.height := GVL.height - 0.4;
+ELSE
+	GVL.dol := FALSE;
+   	GVL.riseWay := FALSE;
+	GVL.riseAction := FALSE;	// Stop moving down
+   	GVL.downDone := TRUE;   // Mark the end of the move
+	aktiviran := FALSE;
+END_IF]]></ST>
+    </Implementation>
+    <LineIds Name="moveDown">
+      <LineId Id="15" Count="6" />
+      <LineId Id="31" Count="0" />
+      <LineId Id="46" Count="0" />
+      <LineId Id="32" Count="0" />
+      <LineId Id="23" Count="2" />
+      <LineId Id="47" Count="0" />
+      <LineId Id="26" Count="0" />
+      <LineId Id="33" Count="0" />
+      <LineId Id="27" Count="1" />
+      <LineId Id="9" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

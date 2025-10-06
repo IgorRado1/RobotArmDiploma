@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.15">
+  <Task Name="PlcTask" Id="{2513f41e-1cca-4c42-9121-4f4f57044739}">
+    <!--CycleTime in micro seconds.-->
+    <CycleTime>10000</CycleTime>
+    <Priority>20</Priority>
+    <PouCall>
+      <Name>MasterControl</Name>
+    </PouCall>
+    <TaskFBGuid>{d7edf96d-ddf7-468a-9b66-5dc568884be1}</TaskFBGuid>
+    <Fb_init>{fdd867b8-b1ba-4039-ba99-dc87a028730d}</Fb_init>
+    <Fb_exit>{3415da3d-d85c-45b9-b271-fdbf4fb0648b}</Fb_exit>
+    <CycleUpdate>{7e13e280-af5e-4bbd-9395-75f8ba84d94b}</CycleUpdate>
+    <PostCycleUpdate>{16b90c06-d49b-43cc-a17f-4cad2dd8a338}</PostCycleUpdate>
+  </Task>
+</TcPlcObject>

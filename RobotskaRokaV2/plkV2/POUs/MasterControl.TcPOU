@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.15">
+  <POU Name="MasterControl" Id="{d4c8eace-a0cb-4904-8e5c-112798a6f148}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MasterControl
+VAR
+	//preveri če je switvh aktiven
+	Rocno: Manual;
+	Avtomatik: Automatic;
+	{attribute 'TcHmiSymbol'}
+	premikanje: SortTest;
+
+	
+	
+	Motor: BOOL;
+	IS_Manual: BOOL;
+	
+	// Nova instanca za vrednotenje kruha
+	BreadEval: getBreadFromSensors;
+	
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[IS_Manual := GVL.ToggleSwitch;
+IF IS_Manual THEN
+	Rocno();
+	//GVL.riseWay := Rocno.smer1;//asign GVL.way
+ELSE
+		//Avtomatik();
+		premikanje();
+END_IF
+
+// Neodvisno od ročnega/avtomatskega režima – vedno preveri kruh
+BreadEval(
+	breadColor := GVL.breadColor,
+	breadWeightClass := GVL.breadWeightClass
+);
+
+// Rezultat zapiši v GVL za HMI uporabo
+GVL.breadTypeImageID := BreadEval.breadTypeImageID;
+GVL.breadInfo := BreadEval.breadInfo;]]></ST>
+    </Implementation>
+    <LineIds Name="MasterControl">
+      <LineId Id="26" Count="0" />
+      <LineId Id="21" Count="1" />
+      <LineId Id="28" Count="0" />
+      <LineId Id="71" Count="0" />
+      <LineId Id="24" Count="0" />
+      <LineId Id="75" Count="0" />
+      <LineId Id="5" Count="0" />
+      <LineId Id="45" Count="8" />
+      <LineId Id="44" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

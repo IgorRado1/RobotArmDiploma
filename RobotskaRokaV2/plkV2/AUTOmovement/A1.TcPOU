@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.15">
+  <POU Name="A1" Id="{8edd17f5-41a6-4587-bf6c-50098ee6fd1d}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK A1
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	R1: Recepie1;
+	stateReset: INT := 1;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[IF stateReset = 0 THEN
+	R1();
+END_IF
+
+RETURN; ]]></ST>
+    </Implementation>
+    <LineIds Name="A1">
+      <LineId Id="12" Count="3" />
+      <LineId Id="9" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
